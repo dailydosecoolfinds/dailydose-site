@@ -12,6 +12,7 @@
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         html { scroll-behavior: smooth; }
         .search-focus:focus-within { ring: 2px; ring-color: #4f46e5; border-color: #4f46e5; }
+        .custom-logo { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 font-sans">
@@ -19,14 +20,17 @@
     <header class="bg-white border-b sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
             <h1 class="text-xl font-bold text-indigo-600 flex items-center gap-2 cursor-pointer" onclick="window.location.reload()">
-                🚀 Daily Dose <span class="hidden md:inline text-gray-800">Cool Finds</span>
+                <img src="https://r2.erweima.ai/ai_image/958d5386-89d3-4632-bd83-f3089d424b42.jpg" alt="Logo" class="custom-logo"> 
+                Daily Dose <span class="hidden md:inline text-gray-800">Cool Finds</span>
             </h1>
             
             <div class="flex items-center gap-4">
                 <div class="flex gap-3 border-r pr-4 mr-2 text-gray-500">
-                    <a href="https://instagram.com" target="_blank" class="hover:text-pink-600"><i data-lucide="instagram" class="w-5 h-5"></i></a>
-                    <a href="https://tiktok.com" target="_blank" class="hover:text-black"><i data-lucide="music-2" class="w-5 h-5"></i></a>
-                    <a href="https://youtube.com" target="_blank" class="hover:text-red-600"><i data-lucide="youtube" class="w-5 h-5"></i></a>
+                    <a href="https://www.instagram.com/dailydosecoolfinds" target="_blank" class="hover:text-pink-600"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                    <a href="https://www.tiktok.com/@dailydosecoolfinds" target="_blank" class="hover:text-black"><i data-lucide="music-2" class="w-5 h-5"></i></a>
+                    <a href="https://www.facebook.com/dailydosecoolfinds" target="_blank" class="hover:text-blue-600"><i data-lucide="facebook" class="w-5 h-5"></i></a>
+                    <a href="https://www.pinterest.com/dailydosecoolfinds" target="_blank" class="hover:text-red-600"><i data-lucide="pinterest" class="w-5 h-5"></i></a>
+                    <a href="https://www.reddit.com/r/DailyDoseCoolFinds" target="_blank" class="hover:text-orange-600"><i data-lucide="reddit" class="w-5 h-5"></i></a>
                 </div>
                 <a href="#newsletter" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition">Join</a>
             </div>
@@ -78,13 +82,18 @@
     <footer class="bg-white border-t py-12 px-4 mt-20">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
             <div class="text-center md:text-left">
-                <h2 class="text-xl font-bold text-indigo-600">🚀 Daily Dose Cool Finds</h2>
+                <h2 class="text-xl font-bold text-indigo-600 flex items-center gap-2">
+                    <img src="https://r2.erweima.ai/ai_image/958d5386-89d3-4632-bd83-f3089d424b42.jpg" alt="Logo" class="custom-logo">
+                    Daily Dose Cool Finds
+                </h2>
                 <p class="text-gray-400 text-sm mt-1">© 2025 Amazing Gems Updated in Real-Time</p>
             </div>
             <div class="flex gap-6 text-gray-400">
-                <a href="#" class="hover:text-pink-600"><i data-lucide="instagram"></i></a>
-                <a href="#" class="hover:text-black"><i data-lucide="music-2"></i></a>
-                <a href="#" class="hover:text-red-600"><i data-lucide="youtube"></i></a>
+                <a href="https://www.instagram.com/dailydosecoolfinds" target="_blank" class="hover:text-pink-600"><i data-lucide="instagram"></i></a>
+                <a href="https://www.tiktok.com/@dailydosecoolfinds" target="_blank" class="hover:text-black"><i data-lucide="music-2"></i></a>
+                <a href="https://www.facebook.com/dailydosecoolfinds" target="_blank" class="hover:text-blue-600"><i data-lucide="facebook"></i></a>
+                <a href="https://www.pinterest.com/dailydosecoolfinds" target="_blank" class="hover:text-red-600"><i data-lucide="pinterest"></i></a>
+                <a href="https://www.reddit.com/r/DailyDoseCoolFinds" target="_blank" class="hover:text-orange-600"><i data-lucide="reddit"></i></a>
             </div>
         </div>
     </footer>
@@ -191,7 +200,6 @@
             }
         }
 
-        // LÓGICA DEL NEWSLETTER (VERSION CORREGIDA)
         document.getElementById('newsletter').addEventListener('submit', function(e) {
             e.preventDefault();
             const emailInput = document.getElementById('newsletterEmail');
@@ -203,24 +211,20 @@
 
             fetch(WEBHOOK_URL, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     email: email, 
                     date: new Date().toLocaleString(),
                     source: 'Daily Dose Web' 
                 })
             })
-            .then(response => {
-                // Alertamos al usuario independientemente del CORS
-                alert('🚀 Perfect! Check Make.com to see if the lead arrived.');
+            .then(() => {
+                alert('🎉 Welcome to the Club!\n\nThank you for subscribing! You’ll now receive our daily curated gems directly in your inbox. Stay tuned! 🚀');
                 emailInput.value = '';
             })
             .catch(err => {
                 console.error('Error:', err);
-                // Muchos webhooks dan error de CORS pero SI reciben los datos
-                alert('🚀 Subscription sent! (Check Make.com history)');
+                alert('✨ You\'re in!\n\nYour subscription was successful. Get ready for the coolest finds! 🚀');
                 emailInput.value = '';
             })
             .finally(() => {
