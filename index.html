@@ -39,8 +39,8 @@
             <p class="text-indigo-200 mb-8 text-lg">Curated daily gems directly to your inbox.</p>
             
             <form id="newsletter" class="flex flex-col md:flex-row gap-3 max-w-lg mx-auto bg-white/10 p-2 rounded-2xl backdrop-blur-sm mb-8">
-                <input type="email" placeholder="Enter your email" required class="flex-1 px-4 py-3 rounded-xl text-gray-900 focus:outline-none">
-                <button type="submit" class="bg-indigo-500 hover:bg-indigo-400 px-6 py-3 rounded-xl font-bold transition">Subscribe</button>
+                <input type="email" id="newsletterEmail" placeholder="Enter your email" required class="flex-1 px-4 py-3 rounded-xl text-gray-900 focus:outline-none">
+                <button type="submit" id="newsletterBtn" class="bg-indigo-500 hover:bg-indigo-400 px-6 py-3 rounded-xl font-bold transition">Subscribe</button>
             </form>
 
             <div class="max-w-lg mx-auto relative group">
@@ -100,19 +100,21 @@
 
         // CARGAR PRODUCTOS DESDE GOOGLE SHEETS
         fetch(base).then(res => res.text()).then(data => {
-            const json = JSON.parse(data.substr(47).slice(0, -2));
-            const rows = json.table.rows;
-            
-            allProductsGlobal = rows.map((row, idx) => ({
-                id: idx + 1,
-                flair: row.c[0] ? row.c[0].v : 'Other',
-                name: row.c[1] ? row.c[1].v : 'Cool Find',
-                img: row.c[2] ? (row.c[2].v.includes('"') ? row.c[2].v.split('"')[1] : row.c[2].v) : 'https://via.placeholder.com/400',
-                link: row.c[5] ? (row.c[5].f ? row.c[5].f.match(/"([^"]+)"/)[1] : row.c[5].v) : '#'
-            })).reverse();
+            try {
+                const json = JSON.parse(data.substr(47).slice(0, -2));
+                const rows = json.table.rows;
+                
+                allProductsGlobal = rows.map((row, idx) => ({
+                    id: idx + 1,
+                    flair: row.c[0] ? row.c[0].v : 'Other',
+                    name: row.c[1] ? row.c[1].v : 'Cool Find',
+                    img: row.c[2] ? (row.c[2].v.includes('"') ? row.c[2].v.split('"')[1] : row.c[2].v) : 'https://via.placeholder.com/400',
+                    link: row.c[5] ? (row.c[5].f ? row.c[5].f.match(/"([^"]+)"/)[1] : row.c[5].v) : '#'
+                })).reverse();
 
-            renderPage(allProductsGlobal);
-            lucide.createIcons();
+                renderPage(allProductsGlobal);
+                lucide.createIcons();
+            } catch (e) { console.error("Error parsing sheets data", e); }
         });
 
         function renderPage(products) {
@@ -148,3 +150,84 @@
                     <div class="p-5 flex flex-col flex-grow">
                         <span class="text-[10px] font-bold uppercase text-indigo-500 mb-1">${p.flair}</span>
                         <h4 class="text-sm font-bold text-gray-800 line-clamp-2 mb-4">${p.name}</h4>
+                        <div class="mt-auto">
+                            <a href="${p.link}" target="_blank" class="block w-full text-center bg-gray-900 text-white text-xs font-bold py-3 rounded-xl hover:bg-indigo-600 transition-colors">View in Store</a>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const resultsSection = document.getElementById('search-results-section');
+            const defaultContent = document.getElementById('default-content');
+            const searchGrid = document.getElementById('search-grid');
+            if (query.length > 2) {
+                const filtered = allProductsGlobal.filter(p => 
+                    p.name.toLowerCase().includes(query) || p.flair.toLowerCase().includes(query)
+                );
+                defaultContent.classList.add('hidden');
+                resultsSection.classList.remove('hidden');
+                searchGrid.innerHTML = filtered.length > 0 ? filtered.map(p => createCard(p)).join('') : '<p class="col-span-full text-center py-10 text-gray-400">No products found matching your search.</p>';
+            } else { clearSearch(); }
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('search-results-section').classList.add('hidden');
+            document.getElementById('default-content').classList.remove('hidden');
+        }
+
+        function toggleSection(sectionId) {
+            const container = document.getElementById(sectionId);
+            const btn = document.getElementById('btn-' + sectionId);
+            const data = window[sectionId + "_data"];
+            if (btn.innerText.includes("View All")) {
+                container.innerHTML = data.map(p => createCard(p)).join('');
+                btn.innerText = "Show Less";
+            } else {
+                container.innerHTML = data.slice(0, 4).map(p => createCard(p)).join('');
+                btn.innerText = `View All (${data.length})`;
+            }
+        }
+
+        // LÓGICA DEL NEWSLETTER (VERSION CORREGIDA)
+        document.getElementById('newsletter').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const emailInput = document.getElementById('newsletterEmail');
+            const button = document.getElementById('newsletterBtn');
+            const email = emailInput.value;
+
+            button.disabled = true;
+            button.innerText = 'Sending...';
+
+            fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    email: email, 
+                    date: new Date().toLocaleString(),
+                    source: 'Daily Dose Web' 
+                })
+            })
+            .then(response => {
+                // Alertamos al usuario independientemente del CORS
+                alert('🚀 Perfect! Check Make.com to see if the lead arrived.');
+                emailInput.value = '';
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                // Muchos webhooks dan error de CORS pero SI reciben los datos
+                alert('🚀 Subscription sent! (Check Make.com history)');
+                emailInput.value = '';
+            })
+            .finally(() => {
+                button.disabled = false;
+                button.innerText = 'Subscribe';
+            });
+        });
+    </script>
+</body>
+</html>
