@@ -6,7 +6,6 @@
     <title>Daily Dose Cool Finds | The Best Gems</title>
     
     <link rel="icon" type="image/png" href="./logo.png">
-    <link rel="apple-touch-icon" href="./logo.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -16,15 +15,7 @@
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         html { scroll-behavior: smooth; }
         .search-focus:focus-within { ring: 2px; ring-color: #4f46e5; border-color: #4f46e5; }
-        /* Estilo del logo circular */
-        .custom-logo { 
-            width: 40px; 
-            height: 40px; 
-            border-radius: 50%; 
-            object-fit: cover; 
-            border: 2px solid #4f46e5;
-            background-color: white;
-        }
+        .custom-logo { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #4f46e5; background: white; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 font-sans">
@@ -32,38 +23,218 @@
     <header class="bg-white border-b sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
             <h1 class="text-xl font-bold text-indigo-600 flex items-center gap-2 cursor-pointer" onclick="window.location.reload()">
-                <img src="./logo.png" alt="Daily Dose Logo" class="custom-logo" onerror="this.src='./logo.jpg'"> 
+                <img src="./logo.png" alt="Logo" class="custom-logo" onerror="this.src='./logo.jpg'"> 
                 Daily Dose <span class="hidden md:inline text-gray-800">Cool Finds</span>
             </h1>
             
             <div class="flex items-center gap-4">
                 <div class="flex gap-3 border-r pr-4 mr-2 text-gray-500">
                     <a href="https://www.instagram.com/dailydosecoolfinds" target="_blank" class="hover:text-pink-600"><i data-lucide="instagram" class="w-5 h-5"></i></a>
-                    <a href="https://www.tiktok.com/@dailydosecoolfinds" target="_blank" class="hover:text-black"><i data-lucide="music-2" class="w-5 h-5"></i></a>
+                    <a href="https://www.tiktok.com/@dailydosecoolfinds" target="_blank" class="hover:text-black"><i data-lucide="music" class="w-5 h-5"></i></a>
                     <a href="https://www.facebook.com/dailydosecoolfinds" target="_blank" class="hover:text-blue-600"><i data-lucide="facebook" class="w-5 h-5"></i></a>
-                    <a href="https://www.pinterest.com/dailydosecoolfinds" target="_blank" class="hover:text-red-600"><i data-lucide="pinterest" class="w-5 h-5"></i></a>
-                    <a href="https://www.reddit.com/r/DailyDoseCoolFinds" target="_blank" class="hover:text-orange-600"><i data-lucide="reddit" class="w-5 h-5"></i></a>
+                    <a href="https://www.pinterest.com/dailydosecoolfinds" target="_blank" class="hover:text-red-600"><i data-lucide="pin" class="w-5 h-5"></i></a>
+                    <a href="https://www.reddit.com/r/DailyDoseCoolFinds" target="_blank" class="hover:text-orange-600"><i data-lucide="message-square" class="w-5 h-5"></i></a>
                 </div>
                 <a href="#newsletter" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition">Join</a>
             </div>
         </div>
     </header>
 
+    <section class="bg-indigo-900 text-white py-12 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl md:text-5xl font-extrabold mb-4">The Coolest Tech & Home Finds</h2>
+            <p class="text-indigo-200 mb-8 text-lg">Curated daily gems directly to your inbox.</p>
+            
+            <form id="newsletter" class="flex flex-col md:flex-row gap-3 max-w-lg mx-auto bg-white/10 p-2 rounded-2xl backdrop-blur-sm mb-8">
+                <input type="email" id="newsletterEmail" placeholder="Enter your email" required class="flex-1 px-4 py-3 rounded-xl text-gray-900 focus:outline-none">
+                <button type="submit" id="newsletterBtn" class="bg-indigo-500 hover:bg-indigo-400 px-6 py-3 rounded-xl font-bold transition">Subscribe</button>
+            </form>
+
+            <div class="max-w-lg mx-auto relative group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i data-lucide="search" class="text-gray-400 w-5 h-5"></i>
+                </div>
+                <input type="text" id="searchInput" onkeyup="handleSearch()" 
+                    placeholder="Search for a product or brand (e.g. Ninja, Mug, Tech)..." 
+                    class="w-full pl-12 pr-4 py-4 rounded-2xl text-gray-900 shadow-xl focus:ring-4 focus:ring-indigo-500/50 outline-none border-none">
+            </div>
+        </div>
+    </section>
+
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <section id="search-results-section" class="hidden mb-16">
+            <div class="flex items-center justify-between mb-8 border-b pb-2">
+                <h3 class="text-2xl font-bold text-indigo-600">🔍 Search Results</h3>
+                <button onclick="clearSearch()" class="text-sm text-gray-400 hover:text-indigo-600">Clear Search</button>
+            </div>
+            <div id="search-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+        </section>
+
+        <div id="default-content">
+            <section class="mb-16">
+                <div class="flex items-center justify-between mb-8 border-b pb-2">
+                    <h3 class="text-2xl font-bold">🔥 Best Sellers</h3>
+                    <span class="text-sm text-gray-400 uppercase">Newest Drops</span>
+                </div>
+                <div id="best-sellers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+            </section>
+            <div id="flair-sections"></div>
+        </div>
+    </main>
+
     <footer class="bg-white border-t py-12 px-4 mt-20">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
             <div class="text-center md:text-left">
                 <h2 class="text-xl font-bold text-indigo-600 flex items-center gap-2">
-                    <img src="./logo.png" alt="Logo Footer" class="custom-logo" onerror="this.src='./logo.jpg'">
+                    <img src="./logo.png" alt="Logo" class="custom-logo" onerror="this.src='./logo.jpg'">
                     Daily Dose Cool Finds
                 </h2>
                 <p class="text-gray-400 text-sm mt-1">© 2025 Amazing Gems Updated in Real-Time</p>
             </div>
+            <div class="flex gap-6 text-gray-400">
+                <a href="https://www.instagram.com/dailydosecoolfinds" target="_blank" class="hover:text-pink-600"><i data-lucide="instagram"></i></a>
+                <a href="https://www.tiktok.com/@dailydosecoolfinds" target="_blank" class="hover:text-black"><i data-lucide="music"></i></a>
+                <a href="https://www.facebook.com/dailydosecoolfinds" target="_blank" class="hover:text-blue-600"><i data-lucide="facebook"></i></a>
+                <a href="https://www.pinterest.com/dailydosecoolfinds" target="_blank" class="hover:text-red-600"><i data-lucide="pin"></i></a>
+                <a href="https://www.reddit.com/r/DailyDoseCoolFinds" target="_blank" class="hover:text-orange-600"><i data-lucide="message-square"></i></a>
             </div>
+        </div>
     </footer>
 
     <script>
-        // ... (Tu código JavaScript actual) ...
-        lucide.createIcons();
+        // CONFIGURACIÓN DE DATOS
+        const SHEET_ID = '1AfB-Sdn9ZgZXqfHLDFiZSmIap9WeXnwVzrNT-zKctlM'; 
+        const SHEET_NAME = 'DailyDoseCoolFinds_Content'; 
+        const WEBHOOK_URL = 'https://hook.us1.make.com/uh798bh2s4qd3bqmtbm3n9g2dy1bkeds';
+
+        const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
+        let allProductsGlobal = [];
+
+        // CARGAR PRODUCTOS DESDE GOOGLE SHEETS
+        fetch(base).then(res => res.text()).then(data => {
+            try {
+                const json = JSON.parse(data.substr(47).slice(0, -2));
+                const rows = json.table.rows;
+                
+                allProductsGlobal = rows.map((row, idx) => ({
+                    id: idx + 1,
+                    flair: row.c[0] ? row.c[0].v : 'Other',
+                    name: row.c[1] ? row.c[1].v : 'Cool Find',
+                    img: row.c[2] ? (row.c[2].v.includes('"') ? row.c[2].v.split('"')[1] : row.c[2].v) : 'https://via.placeholder.com/400',
+                    link: row.c[5] ? (row.c[5].f ? row.c[5].f.match(/"([^"]+)"/)[1] : row.c[5].v) : '#'
+                })).reverse();
+
+                renderPage(allProductsGlobal);
+                lucide.createIcons();
+            } catch (e) { console.error("Error parsing sheets data", e); }
+        });
+
+        function renderPage(products) {
+            document.getElementById('best-sellers-grid').innerHTML = products.slice(0, 4).map(p => createCard(p)).join('');
+            const categories = {};
+            products.forEach(p => {
+                if (!categories[p.flair]) categories[p.flair] = [];
+                categories[p.flair].push(p);
+            });
+            const sectionsContainer = document.getElementById('flair-sections');
+            sectionsContainer.innerHTML = '';
+            for (const flair in categories) {
+                const pList = categories[flair];
+                const sectionId = `section-${flair.replace(/\s+/g, '-').toLowerCase()}`;
+                sectionsContainer.innerHTML += `
+                    <section class="mb-16">
+                        <div class="flex items-center justify-between mb-8 border-b pb-2">
+                            <h3 class="text-2xl font-bold">${flair}</h3>
+                            <button onclick="toggleSection('${sectionId}')" id="btn-${sectionId}" class="text-sm font-bold text-indigo-600 hover:underline">View All (${pList.length})</button>
+                        </div>
+                        <div id="${sectionId}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">${pList.slice(0, 4).map(p => createCard(p)).join('')}</div>
+                    </section>`;
+                window[sectionId + "_data"] = pList;
+            }
+        }
+
+        function createCard(p) {
+            return `
+                <div class="product-card bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col h-full">
+                    <div class="h-52 bg-white p-4 flex items-center justify-center">
+                        <img src="${p.img}" class="max-h-full object-contain" alt="${p.name}">
+                    </div>
+                    <div class="p-5 flex flex-col flex-grow">
+                        <span class="text-[10px] font-bold uppercase text-indigo-500 mb-1">${p.flair}</span>
+                        <h4 class="text-sm font-bold text-gray-800 line-clamp-2 mb-4">${p.name}</h4>
+                        <div class="mt-auto">
+                            <a href="${p.link}" target="_blank" class="block w-full text-center bg-gray-900 text-white text-xs font-bold py-3 rounded-xl hover:bg-indigo-600 transition-colors">View in Store</a>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const resultsSection = document.getElementById('search-results-section');
+            const defaultContent = document.getElementById('default-content');
+            const searchGrid = document.getElementById('search-grid');
+            if (query.length > 2) {
+                const filtered = allProductsGlobal.filter(p => 
+                    p.name.toLowerCase().includes(query) || p.flair.toLowerCase().includes(query)
+                );
+                defaultContent.classList.add('hidden');
+                resultsSection.classList.remove('hidden');
+                searchGrid.innerHTML = filtered.length > 0 ? filtered.map(p => createCard(p)).join('') : '<p class="col-span-full text-center py-10 text-gray-400">No products found matching your search.</p>';
+            } else { clearSearch(); }
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('search-results-section').classList.add('hidden');
+            document.getElementById('default-content').classList.remove('hidden');
+        }
+
+        function toggleSection(sectionId) {
+            const container = document.getElementById(sectionId);
+            const btn = document.getElementById('btn-' + sectionId);
+            const data = window[sectionId + "_data"];
+            if (btn.innerText.includes("View All")) {
+                container.innerHTML = data.map(p => createCard(p)).join('');
+                btn.innerText = "Show Less";
+            } else {
+                container.innerHTML = data.slice(0, 4).map(p => createCard(p)).join('') ;
+                btn.innerText = `View All (${data.length})`;
+            }
+        }
+
+        document.getElementById('newsletter').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const emailInput = document.getElementById('newsletterEmail');
+            const button = document.getElementById('newsletterBtn');
+            const email = emailInput.value;
+
+            button.disabled = true;
+            button.innerText = 'Sending...';
+
+            fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    email: email, 
+                    date: new Date().toLocaleString(),
+                    source: 'Daily Dose Web' 
+                })
+            })
+            .then(() => {
+                alert('🎉 Welcome to the Club!\n\nThank you for subscribing! You’ll now receive our daily curated gems directly in your inbox. Stay tuned! 🚀');
+                emailInput.value = '';
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('✨ You\'re in!\n\nYour subscription was successful. Get ready for the coolest finds! 🚀');
+                emailInput.value = '';
+            })
+            .finally(() => {
+                button.disabled = false;
+                button.innerText = 'Subscribe';
+            });
+        });
     </script>
 </body>
 </html>
