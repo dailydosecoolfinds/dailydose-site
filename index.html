@@ -55,7 +55,6 @@
     </section>
 
     <main class="max-w-7xl mx-auto px-4 py-12">
-        
         <section id="search-results-section" class="hidden mb-16">
             <div class="flex items-center justify-between mb-8 border-b pb-2">
                 <h3 class="text-2xl font-bold text-indigo-600">🔍 Search Results</h3>
@@ -72,10 +71,8 @@
                 </div>
                 <div id="best-sellers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
             </section>
-
             <div id="flair-sections"></div>
         </div>
-
     </main>
 
     <footer class="bg-white border-t py-12 px-4 mt-20">
@@ -93,12 +90,15 @@
     </footer>
 
     <script>
+        // CONFIGURACIÓN DE DATOS
         const SHEET_ID = '1AfB-Sdn9ZgZXqfHLDFiZSmIap9WeXnwVzrNT-zKctlM'; 
         const SHEET_NAME = 'DailyDoseCoolFinds_Content'; 
-        const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
+        const WEBHOOK_URL = 'https://hook.us1.make.com/uh798bh2s4qd3bqmtbm3n9g2dy1bkeds';
 
+        const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
         let allProductsGlobal = [];
 
+        // CARGAR PRODUCTOS DESDE GOOGLE SHEETS
         fetch(base).then(res => res.text()).then(data => {
             const json = JSON.parse(data.substr(47).slice(0, -2));
             const rows = json.table.rows;
@@ -116,16 +116,12 @@
         });
 
         function renderPage(products) {
-            // Render Best Sellers (First 4)
             document.getElementById('best-sellers-grid').innerHTML = products.slice(0, 4).map(p => createCard(p)).join('');
-            
-            // Render Categories
             const categories = {};
             products.forEach(p => {
                 if (!categories[p.flair]) categories[p.flair] = [];
                 categories[p.flair].push(p);
             });
-
             const sectionsContainer = document.getElementById('flair-sections');
             sectionsContainer.innerHTML = '';
             for (const flair in categories) {
@@ -152,52 +148,3 @@
                     <div class="p-5 flex flex-col flex-grow">
                         <span class="text-[10px] font-bold uppercase text-indigo-500 mb-1">${p.flair}</span>
                         <h4 class="text-sm font-bold text-gray-800 line-clamp-2 mb-4">${p.name}</h4>
-                        <div class="mt-auto">
-                            <a href="${p.link}" target="_blank" class="block w-full text-center bg-gray-900 text-white text-xs font-bold py-3 rounded-xl hover:bg-indigo-600 transition-colors">View in Store</a>
-                        </div>
-                    </div>
-                </div>`;
-        }
-
-        function handleSearch() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const resultsSection = document.getElementById('search-results-section');
-            const defaultContent = document.getElementById('default-content');
-            const searchGrid = document.getElementById('search-grid');
-
-            if (query.length > 2) {
-                const filtered = allProductsGlobal.filter(p => 
-                    p.name.toLowerCase().includes(query) || p.flair.toLowerCase().includes(query)
-                );
-                
-                defaultContent.classList.add('hidden');
-                resultsSection.classList.remove('hidden');
-                searchGrid.innerHTML = filtered.length > 0 
-                    ? filtered.map(p => createCard(p)).join('') 
-                    : '<p class="col-span-full text-center py-10 text-gray-400">No products found matching your search.</p>';
-            } else {
-                clearSearch();
-            }
-        }
-
-        function clearSearch() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('search-results-section').classList.add('hidden');
-            document.getElementById('default-content').classList.remove('hidden');
-        }
-
-        function toggleSection(sectionId) {
-            const container = document.getElementById(sectionId);
-            const btn = document.getElementById('btn-' + sectionId);
-            const data = window[sectionId + "_data"];
-            if (btn.innerText.includes("View All")) {
-                container.innerHTML = data.map(p => createCard(p)).join('');
-                btn.innerText = "Show Less";
-            } else {
-                container.innerHTML = data.slice(0, 4).map(p => createCard(p)).join('');
-                btn.innerText = `View All (${data.length})`;
-            }
-        }
-    </script>
-</body>
-</html>
