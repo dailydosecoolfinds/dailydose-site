@@ -102,7 +102,6 @@
     </footer>
 
     <script>
-        // CONFIGURACIÓN DE DATOS
         const SHEET_ID = '1AfB-Sdn9ZgZXqfHLDFiZSmIap9WeXnwVzrNT-zKctlM'; 
         const SHEET_NAME = 'DailyDoseCoolFinds_Content'; 
         const WEBHOOK_URL = 'https://hook.us1.make.com/uh798bh2s4qd3bqmtbm3n9g2dy1bkeds';
@@ -110,19 +109,33 @@
         const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
         let allProductsGlobal = [];
 
-        // CARGAR PRODUCTOS DESDE GOOGLE SHEETS
         fetch(base).then(res => res.text()).then(data => {
             try {
                 const json = JSON.parse(data.substr(47).slice(0, -2));
                 const rows = json.table.rows;
                 
-                allProductsGlobal = rows.map((row, idx) => ({
-                    id: idx + 1,
-                    flair: row.c[0] ? row.c[0].v : 'Other',
-                    name: row.c[1] ? row.c[1].v : 'Cool Find',
-                    img: row.c[2] ? (row.c[2].v.includes('"') ? row.c[2].v.split('"')[1] : row.c[2].v) : 'https://via.placeholder.com/400',
-                    link: row.c[5] ? (row.c[5].f ? row.c[5].f.match(/"([^"]+)"/)[1] : row.c[5].v) : '#'
-                })).reverse();
+                allProductsGlobal = rows.map((row, idx) => {
+                    // EXTRACCIÓN MEJORADA DE ENLACES (COLUMNA F)
+                    let finalLink = '#';
+                    if (row.c[5]) {
+                        if (row.c[5].f) {
+                            // Extrae URL de fórmula =HYPERLINK("url","text")
+                            const match = row.c[5].f.match(/"([^"]+)"/);
+                            finalLink = match ? match[1] : row.c[5].v;
+                        } else {
+                            // Toma el texto directo (importante para Sovrn/Viglink)
+                            finalLink = row.c[5].v;
+                        }
+                    }
+
+                    return {
+                        id: idx + 1,
+                        flair: row.c[0] ? row.c[0].v : 'Other',
+                        name: row.c[1] ? row.c[1].v : 'Cool Find',
+                        img: row.c[2] ? (row.c[2].v.includes('"') ? row.c[2].v.split('"')[1] : row.c[2].v) : 'https://via.placeholder.com/400',
+                        link: finalLink
+                    };
+                }).reverse();
 
                 renderPage(allProductsGlobal);
                 lucide.createIcons();
@@ -208,7 +221,6 @@
             const emailInput = document.getElementById('newsletterEmail');
             const button = document.getElementById('newsletterBtn');
             const email = emailInput.value;
-
             button.disabled = true;
             button.innerText = 'Sending...';
 
@@ -222,12 +234,11 @@
                 })
             })
             .then(() => {
-                alert('🎉 Welcome to the Club!\n\nThank you for subscribing! You’ll now receive our daily curated gems directly in your inbox. Stay tuned! 🚀');
+                alert('🎉 Welcome to the Club!');
                 emailInput.value = '';
             })
             .catch(err => {
-                console.error('Error:', err);
-                alert('✨ You\'re in!\n\nYour subscription was successful. Get ready for the coolest finds! 🚀');
+                alert('✨ You\'re in!');
                 emailInput.value = '';
             })
             .finally(() => {
