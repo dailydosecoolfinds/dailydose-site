@@ -7,6 +7,17 @@
     <link rel="icon" type="image/png" href="./logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script type="text/javascript">
+      var vglnk = {key: '54397b0aab0ed75611bea3b3bc5d4e55'};
+      (function(d, t) {var s = d.createElement(t);
+        s.type = 'text/javascript';s.async = true;
+        s.src = '//cdn.viglink.com/api/vglnk.js';
+        var r = d.getElementsByTagName(t)[0];
+        r.parentNode.insertBefore(s, r);
+      }(document, 'script'));
+    </script>
+
     <style>
         .product-card { transition: all 0.3s ease; }
         .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
@@ -91,7 +102,6 @@
         fetch(base).then(res => res.text()).then(data => {
             const json = JSON.parse(data.substr(47).slice(0, -2));
             allProductsGlobal = json.table.rows.map((row, idx) => {
-                // Extraer link de Sovrn (Columna F / index 5)
                 let link = row.c[5] ? (row.c[5].f ? row.c[5].f.match(/"([^"]+)"/)[1] : row.c[5].v) : '#';
                 return {
                     id: idx,
@@ -121,7 +131,6 @@
             document.getElementById('filtered-view').classList.add('hidden');
             document.getElementById('hero-section').classList.remove('hidden');
 
-            // Top 4 recientes general
             document.getElementById('best-sellers-grid').innerHTML = allProductsGlobal.slice(0, 4).map(p => createCard(p)).join('');
             
             const categories = {};
@@ -191,7 +200,6 @@
             lucide.createIcons();
         }
 
-        // Navegación con botón atrás del navegador
         window.onpopstate = () => checkRoute();
     </script>
 </body>
